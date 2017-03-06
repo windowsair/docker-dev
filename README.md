@@ -63,13 +63,13 @@ set -x && git clone https://github.com/akavel/rsrc.git /go/src/github.com/akavel
 ```
 ============================
 ##2.Git clone to your gopath
-    If you follow the above example to do, then the next step can be this:
+If you follow the above example to do, then the next step can be this:
     <code>git clone https://github.com/windowsair/docker-dev.git /go/src/github.com/docker/docker</code>
-============================    
+    
 ##3.Warning
-  Remember to delete the original .git folder,and rename the git folder to .git .
-============================  
+Remember to delete the original .git folder,and rename the git folder to .git .
+  
 ##4.Start to hack
-  Run <code>./hack/make.sh</code> and enjoy it !
+Run <code>./hack/make.sh</code> and enjoy it !
  
 
