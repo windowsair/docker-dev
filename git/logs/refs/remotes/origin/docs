@@ -1,0 +1,10 @@
+064658922bef39c5680758c48876ebe40844def9 4bae33ef9fd217179ab7d59217c2e7f189e29c56 Debian <admin@smfw.(none)> 1423678535 +0000	fetch --append -q origin: forced-update
+4bae33ef9fd217179ab7d59217c2e7f189e29c56 5d43e7d94bf3ce5f48697a1bd1f392d2e08a9035 Debian <admin@smfw.(none)> 1429654622 +0000	fetch --append -q origin: fast-forward
+5d43e7d94bf3ce5f48697a1bd1f392d2e08a9035 7bd93113a13c0d194573f0579a493142966ab9ba Debian <admin@smfw.(none)> 1431126865 +0000	fetch --append -q origin: fast-forward
+7bd93113a13c0d194573f0579a493142966ab9ba 769d7ad26fd34ec31de0ae38b4677855db15beec Debian <admin@smfw.(none)> 1431722419 +0000	fetch --append -q origin: fast-forward
+769d7ad26fd34ec31de0ae38b4677855db15beec 44a8cf337b8e896087b4969bda62d372aa951a94 Debian <admin@smfw.(none)> 1434665853 +0000	fetch --append -q origin: forced-update
+44a8cf337b8e896087b4969bda62d372aa951a94 055b2cfd9ec0dad06896ec8e155d0db2cb04f20a Debian <admin@smfw.(none)> 1437007303 +0000	fetch --append -q origin: fast-forward
+055b2cfd9ec0dad06896ec8e155d0db2cb04f20a 942363d3ca119c19d82525b4b9e0c65dc35b9359 Debian <admin@smfw.(none)> 1440528152 +0000	fetch --append -q origin: forced-update
+942363d3ca119c19d82525b4b9e0c65dc35b9359 d38a598e5264a3bebb8c41c6b800086bf7e3b60b Debian <admin@smfw.(none)> 1444851950 +0000	fetch --append -q origin: fast-forward
+d38a598e5264a3bebb8c41c6b800086bf7e3b60b 76d6bc9a9f1690e16f3721ba165364688b626de2 Debian <admin@smfw.(none)> 1447181373 +0000	fetch --append -q origin: forced-update
+76d6bc9a9f1690e16f3721ba165364688b626de2 a34a1d598c6096ed8b5ce5219e77d68e5cd85462 Debian <admin@smfw.(none)> 1448054986 +0000	fetch --append -q origin: fast-forward
