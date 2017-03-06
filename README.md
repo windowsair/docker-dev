@@ -1,300 +1,75 @@
-Docker: the container engine [![Release](https://img.shields.io/github/release/docker/docker.svg)](https://github.com/docker/docker/releases/latest)
+Docker-dev: the container engine with golang sources. 
 ============================
+#How to use it?
 
-Docker is an open source project to pack, ship and run any application
-as a lightweight container.
-
-Docker containers are both *hardware-agnostic* and *platform-agnostic*.
-This means they can run anywhere, from your laptop to the largest
-cloud compute instance and everything in between - and they don't require
-you to use a particular language, framework or packaging system. That
-makes them great building blocks for deploying and scaling web apps,
-databases, and backend services without depending on a particular stack
-or provider.
-
-Docker began as an open-source implementation of the deployment engine which
-powers [dotCloud](https://www.dotcloud.com), a popular Platform-as-a-Service.
-It benefits directly from the experience accumulated over several years
-of large-scale operation and support of hundreds of thousands of
-applications and databases.
-
-![Docker L](docs/static_files/docker-logo-compressed.png "Docker")
-
-## Security Disclosure
-
-Security is very important to us. If you have any issue regarding security, 
-please disclose the information responsibly by sending an email to 
-security@docker.com and not by creating a github issue.
-
-## Better than VMs
-
-A common method for distributing applications and sandboxing their
-execution is to use virtual machines, or VMs. Typical VM formats are
-VMware's vmdk, Oracle VirtualBox's vdi, and Amazon EC2's ami. In theory
-these formats should allow every developer to automatically package
-their application into a "machine" for easy distribution and deployment.
-In practice, that almost never happens, for a few reasons:
-
-  * *Size*: VMs are very large which makes them impractical to store
-     and transfer.
-  * *Performance*: running VMs consumes significant CPU and memory,
-    which makes them impractical in many scenarios, for example local
-    development of multi-tier applications, and large-scale deployment
-    of cpu and memory-intensive applications on large numbers of
-    machines.
-  * *Portability*: competing VM environments don't play well with each
-     other. Although conversion tools do exist, they are limited and
-     add even more overhead.
-  * *Hardware-centric*: VMs were designed with machine operators in
-    mind, not software developers. As a result, they offer very
-    limited tooling for what developers need most: building, testing
-    and running their software. For example, VMs offer no facilities
-    for application versioning, monitoring, configuration, logging or
-    service discovery.
-
-By contrast, Docker relies on a different sandboxing method known as
-*containerization*. Unlike traditional virtualization, containerization
-takes place at the kernel level. Most modern operating system kernels
-now support the primitives necessary for containerization, including
-Linux with [openvz](https://openvz.org),
-[vserver](http://linux-vserver.org) and more recently
-[lxc](https://linuxcontainers.org/), Solaris with
-[zones](https://docs.oracle.com/cd/E26502_01/html/E29024/preface-1.html#scrolltoc),
-and FreeBSD with
-[Jails](https://www.freebsd.org/doc/handbook/jails.html).
-
-Docker builds on top of these low-level primitives to offer developers a
-portable format and runtime environment that solves all four problems.
-Docker containers are small (and their transfer can be optimized with
-layers), they have basically zero memory and cpu overhead, they are
-completely portable, and are designed from the ground up with an
-application-centric design.
-
-Perhaps best of all, because Docker operates at the OS level, it can still be
-run inside a VM!
-
-## Plays well with others
-
-Docker does not require you to buy into a particular programming
-language, framework, packaging system, or configuration language.
-
-Is your application a Unix process? Does it use files, tcp connections,
-environment variables, standard Unix streams and command-line arguments
-as inputs and outputs? Then Docker can run it.
-
-Can your application's build be expressed as a sequence of such
-commands? Then Docker can build it.
-
-## Escape dependency hell
-
-A common problem for developers is the difficulty of managing all
-their application's dependencies in a simple and automated way.
-
-This is usually difficult for several reasons:
-
-  * *Cross-platform dependencies*. Modern applications often depend on
-    a combination of system libraries and binaries, language-specific
-    packages, framework-specific modules, internal components
-    developed for another project, etc. These dependencies live in
-    different "worlds" and require different tools - these tools
-    typically don't work well with each other, requiring awkward
-    custom integrations.
-
-  * *Conflicting dependencies*. Different applications may depend on
-    different versions of the same dependency. Packaging tools handle
-    these situations with various degrees of ease - but they all
-    handle them in different and incompatible ways, which again forces
-    the developer to do extra work.
-
-  * *Custom dependencies*. A developer may need to prepare a custom
-    version of their application's dependency. Some packaging systems
-    can handle custom versions of a dependency, others can't - and all
-    of them handle it differently.
+##1.Building development environment.
+    
+You can see an example of building a compilation environment in an Ubuntu environment:
+```shell
+#!/bin/bash
+cat >> /etc/profile.d/dockerhack.sh <<EOF
+export DOCKER_BUILDTAGS="apparmor selinux"
+export DOCKER_CROSSPLATFORMS="linux/386 linux/arm 	darwin/amd64 darwin/386 	freebsd/amd64 freebsd/386 freebsd/arm 	windows/amd64 windows/386"
+export DOCKER_PY_COMMIT="47ab89ec2bd3bddf1221b856ffbaff333edeabb4"
+export GOARM="5"
+export GOPATH="/go:/go/src/github.com/docker/docker/vendor"
+export GO_LINT_COMMIT="f42f5c1c440621302702cb0741e9d2ca547ae80f"
+export GO_TOOLS_COMMIT="069d2f3bcb68257b627205f0486d6cc69a231ff9"
+export GO_VERSION="1.4.3"
+export HOME="/root"
+export HOSTNAME="553770d7c964"
+export LXC_VERSION="1.1.2"
+export NOTARY_COMMIT="8e8122eb5528f621afcd4e2854c47302f17392f7"
+export OLDPWD="/go/src/github.com/docker"
+export PATH="/go/bin:/usr/local/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+export PWD="/etc/profile.d"
+export REGISTRY_COMMIT="ec87e9b6971d831f0eff752ddb54fb64693e51cd"
+export RSRC_COMMIT="e48dbf1b7fc464a9e85fcec450dddf80816b76e0"
+export SHLVL="1"
+export TERM="xterm"
+export TOMLV_COMMIT="9baf8a8a9f2ed20a8e54160840c492f937eeaf9a"
+EOF
+source /etc/profile
 
 
-Docker solves the problem of dependency hell by giving the developer a simple
-way to express *all* their application's dependencies in one place, while
-streamlining the process of assembling them. If this makes you think of
-[XKCD 927](https://xkcd.com/927/), don't worry. Docker doesn't
-*replace* your favorite packaging systems. It simply orchestrates
-their use in a simple and repeatable way. How does it do that? With
-layers.
 
-Docker defines a build as running a sequence of Unix commands, one
-after the other, in the same container. Build commands modify the
-contents of the container (usually by installing new files on the
-filesystem), the next command modifies it some more, etc. Since each
-build command inherits the result of the previous commands, the
-*order* in which the commands are executed expresses *dependencies*.
-
-Here's a typical Docker build process:
-
-```bash
-FROM ubuntu:12.04
-RUN apt-get update && apt-get install -y python python-pip curl
-RUN curl -sSL https://github.com/shykes/helloflask/archive/master.tar.gz | tar -xzv
-RUN cd helloflask-master && pip install -r requirements.txt
+export PATH="/go/bin:/usr/local/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+echo '#!/bin/bash' > /usr/sbin/policy-rc.d && echo 'exit 101' >> /usr/sbin/policy-rc.d && chmod +x /usr/sbin/policy-rc.d && dpkg-divert --local --rename --add /sbin/initctl && cp -a /usr/sbin/policy-rc.d /sbin/initctl && sed -i 's/^exit.*/exit 0/' /sbin/initctl && echo 'force-unsafe-io' > /etc/dpkg/dpkg.cfg.d/docker-apt-speedup && echo 'DPkg::Post-Invoke { "rm -f /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin || true"; };' > /etc/apt/apt.conf.d/docker-clean && echo 'APT::Update::Post-Invoke { "rm -f /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin || true"; };' >> /etc/apt/apt.conf.d/docker-clean && echo 'Dir::Cache::pkgcache ""; Dir::Cache::srcpkgcache "";' >> /etc/apt/apt.conf.d/docker-clean && echo 'Acquire::Languages "none";' > /etc/apt/apt.conf.d/docker-no-languages && echo 'Acquire::GzipIndexes "true"; Acquire::CompressionTypes::Order:: "gz";' > /etc/apt/apt.conf.d/docker-gzip-indexes 
+sed -i 's/^#\s*\(deb.*universe\)$/\1/g' /etc/apt/sources.list 
+apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys E871F18B51E0147C77796AC81196BA81F6B0FC61 
+echo deb http://ppa.launchpad.net/zfs-native/stable/ubuntu trusty main > /etc/apt/sources.list.d/zfs.list 
+apt-get update && apt-get install -y apparmor aufs-tools automake bash-completion btrfs-tools build-essential createrepo curl dpkg-sig git iptables libapparmor-dev libcap-dev libsqlite3-dev mercurial parallel python-mock python-pip python-websocket reprepro ruby1.9.1 ruby1.9.1-dev s3cmd=1.1.0* ubuntu-zfs libzfs-dev --no-install-recommends 
+git clone -b v2_02_103 http://sourceware.org/git/lvm2.git /usr/local/lvm2 
+cd /usr/local/lvm2 && ./configure --enable-static_link && make  && make install
+mkdir -p /usr/src/lxc && curl -sSL https://linuxcontainers.org/downloads/lxc/lxc-${LXC_VERSION}.tar.gz | tar -v -C /usr/src/lxc/ -xz --strip-components=1 
+cd /usr/src/lxc && ./configure && make && make install && ldconfig 
+curl -sSL https://golang.org/dl/go${GO_VERSION}.src.tar.gz | tar -v -C /usr/local -xz && mkdir -p /go/bin 
+cd /usr/local/go/src && ./make.bash --no-clean 2>&1 
+cd /usr/local/go/src && set -x && for platform in $DOCKER_CROSSPLATFORMS; do GOOS=${platform%/*} GOARCH=${platform##*/} ./make.bash --no-clean 2>&1; done 
+git clone https://github.com/golang/tools.git /go/src/golang.org/x/tools && (cd /go/src/golang.org/x/tools && git checkout -q $GO_TOOLS_COMMIT) && go install -v golang.org/x/tools/cmd/cover && go install -v golang.org/x/tools/cmd/vet 
+git clone https://github.com/golang/lint.git /go/src/github.com/golang/lint && (cd /go/src/github.com/golang/lint && git checkout -q $GO_LINT_COMMIT) && go install -v github.com/golang/lint/golint 
+gem install --no-rdoc --no-ri fpm --version 1.3.2 
+set -x && export GOPATH="$(mktemp -d)" && git clone https://github.com/docker/distribution.git "$GOPATH/src/github.com/docker/distribution" && (cd "$GOPATH/src/github.com/docker/distribution" && git checkout -q "$REGISTRY_COMMIT") && GOPATH="$GOPATH/src/github.com/docker/distribution/Godeps/_workspace:$GOPATH" go build -o /usr/local/bin/registry-v2 github.com/docker/distribution/cmd/registry && rm -rf "$GOPATH" 
+set -x && export GOPATH="$(mktemp -d)" && git clone https://github.com/docker/notary.git "$GOPATH/src/github.com/docker/notary" && (cd "$GOPATH/src/github.com/docker/notary" && git checkout -q "$NOTARY_COMMIT") && GOPATH="$GOPATH/src/github.com/docker/notary/Godeps/_workspace:$GOPATH" go build -o /usr/local/bin/notary-server github.com/docker/notary/cmd/notary-server && rm -rf "$GOPATH" 
+git clone https://github.com/docker/docker-py.git /docker-py && cd /docker-py && git checkout -q $DOCKER_PY_COMMIT 
+{ echo '[default]'; echo 'access_key=$AWS_ACCESS_KEY'; echo 'secret_key=$AWS_SECRET_KEY'; } > ~/.s3cfg 
+git config --global user.email 'docker-dummy@example.com' 
+ln -sfv $PWD/.bashrc ~/.bashrc 
+ln -sv $PWD/contrib/completion/bash/docker /etc/bash_completion.d/docker 
+/go/src/github.com/docker/docker/contrib/download-frozen-image.sh /docker-frozen-images busybox:latest@8c2e06607696bd4afb3d03b687e361cc43cf8ec1a4a725bc96e39f05ba97dd55 hello-world:frozen@91c95931e552b11604fea91c2f537284149ec32fff0f700a4769cfd31d7696ae jess/unshare@5c9f6ea50341a2a8eb6677527f2bdedbf331ae894a41714fda770fb130f3314d 
+set -x && export GOPATH="$(mktemp -d)" && git clone -b v1.0.3 https://github.com/cpuguy83/go-md2man.git "$GOPATH/src/github.com/cpuguy83/go-md2man" && git clone -b v1.2 https://github.com/russross/blackfriday.git "$GOPATH/src/github.com/russross/blackfriday" && go get -v -d github.com/cpuguy83/go-md2man && go build -v -o /usr/local/bin/go-md2man github.com/cpuguy83/go-md2man && rm -rf "$GOPATH" 
+set -x && export GOPATH="$(mktemp -d)" && git clone https://github.com/BurntSushi/toml.git "$GOPATH/src/github.com/BurntSushi/toml" && (cd "$GOPATH/src/github.com/BurntSushi/toml" && git checkout -q "$TOMLV_COMMIT") && go build -v -o /usr/local/bin/tomlv github.com/BurntSushi/toml/cmd/tomlv && rm -rf "$GOPATH" 
+set -x && git clone https://github.com/akavel/rsrc.git /go/src/github.com/akavel/rsrc && cd /go/src/github.com/akavel/rsrc && git checkout -q $RSRC_COMMIT && go install -v 
 ```
+============================
+##2.Git clone to your gopath
+    If you follow the above example to do, then the next step can be this:
+    <code>git clone https://github.com/windowsair/docker-dev.git /go/src/github.com/docker/docker</code>
+============================    
+##3.Warning
+  Remember to delete the original .git folder,and rename the git folder to .git .
+============================  
+##4.Start to hack
+  Run <code>./hack/make.sh</code> and enjoy it !
+ 
 
-Note that Docker doesn't care *how* dependencies are built - as long
-as they can be built by running a Unix command in a container.
-
-
-Getting started
-===============
-
-Docker can be installed on your local machine as well as servers - both
-bare metal and virtualized.  It is available as a binary on most modern
-Linux systems, or as a VM on Windows, Mac and other systems.
-
-We also offer an [interactive tutorial](https://www.docker.com/tryit/)
-for quickly learning the basics of using Docker.
-
-For up-to-date install instructions, see the [Docs](https://docs.docker.com).
-
-Usage examples
-==============
-
-Docker can be used to run short-lived commands, long-running daemons
-(app servers, databases, etc.), interactive shell sessions, etc.
-
-You can find a [list of real-world
-examples](https://docs.docker.com/examples/) in the
-documentation.
-
-Under the hood
---------------
-
-Under the hood, Docker is built on the following components:
-
-* The
-  [cgroups](https://www.kernel.org/doc/Documentation/cgroups/cgroups.txt)
-  and
-  [namespaces](http://man7.org/linux/man-pages/man7/namespaces.7.html)
-  capabilities of the Linux kernel
-* The [Go](https://golang.org) programming language
-* The [Docker Image Specification](https://github.com/docker/docker/blob/master/image/spec/v1.md)
-* The [Libcontainer Specification](https://github.com/opencontainers/runc/blob/master/libcontainer/SPEC.md)
-
-Contributing to Docker [![GoDoc](https://godoc.org/github.com/docker/docker?status.svg)](https://godoc.org/github.com/docker/docker)
-======================
-
-| **Master** (Linux) | **Experimental** (linux) | **Windows** | **FreeBSD** |
-|------------------|----------------------|---------|---------|
-| [![Jenkins Build Status](https://jenkins.dockerproject.org/view/Docker/job/Docker%20Master/badge/icon)](https://jenkins.dockerproject.org/view/Docker/job/Docker%20Master/) | [![Jenkins Build Status](https://jenkins.dockerproject.org/view/Docker/job/Docker%20Master%20%28experimental%29/badge/icon)](https://jenkins.dockerproject.org/view/Docker/job/Docker%20Master%20%28experimental%29/) | [![Build Status](http://jenkins.dockerproject.org/job/Docker%20Master%20(windows)/badge/icon)](http://jenkins.dockerproject.org/job/Docker%20Master%20(windows)/) | [![Build Status](http://jenkins.dockerproject.org/job/Docker%20Master%20(freebsd)/badge/icon)](http://jenkins.dockerproject.org/job/Docker%20Master%20(freebsd)/) |
-
-Want to hack on Docker? Awesome! We have [instructions to help you get
-started contributing code or documentation](https://docs.docker.com/project/who-written-for/).
-
-These instructions are probably not perfect, please let us know if anything
-feels wrong or incomplete. Better yet, submit a PR and improve them yourself.
-
-Getting the development builds
-==============================
-
-Want to run Docker from a master build? You can download 
-master builds at [master.dockerproject.org](https://master.dockerproject.org). 
-They are updated with each commit merged into the master branch.
-
-Don't know how to use that super cool new feature in the master build? Check
-out the master docs at
-[docs.master.dockerproject.org](http://docs.master.dockerproject.org).
-
-How the project is run
-======================
-
-Docker is a very, very active project. If you want to learn more about how it is run,
-or want to get more involved, the best place to start is [the project directory](https://github.com/docker/docker/tree/master/project).
-
-We are always open to suggestions on process improvements, and are always looking for more maintainers.
-
-### Talking to other Docker users and contributors
-
-<table class="tg">
-  <col width="45%">
-  <col width="65%">
-  <tr>
-    <td>Internet&nbsp;Relay&nbsp;Chat&nbsp;(IRC)</td>
-    <td>
-      <p>
-        IRC a direct line to our most knowledgeable Docker users; we have
-        both the  <code>#docker</code> and <code>#docker-dev</code> group on
-        <strong>irc.freenode.net</strong>.
-        IRC is a rich chat protocol but it can overwhelm new users. You can search
-        <a href="https://botbot.me/freenode/docker/#" target="_blank">our chat archives</a>.
-      </p>
-      Read our <a href="https://docs.docker.com/project/get-help/#irc-quickstart" target="_blank">IRC quickstart guide</a> for an easy way to get started.
-    </td>
-  </tr>
-  <tr>
-    <td>Google Groups</td>
-    <td>
-      There are two groups.
-      <a href="https://groups.google.com/forum/#!forum/docker-user" target="_blank">Docker-user</a>
-      is for people using Docker containers.
-      The <a href="https://groups.google.com/forum/#!forum/docker-dev" target="_blank">docker-dev</a>
-      group is for contributors and other people contributing to the Docker
-      project.
-    </td>
-  </tr>
-  <tr>
-    <td>Twitter</td>
-    <td>
-      You can follow <a href="https://twitter.com/docker/" target="_blank">Docker's Twitter feed</a>
-      to get updates on our products. You can also tweet us questions or just
-      share blogs or stories.
-    </td>
-  </tr>
-  <tr>
-    <td>Stack Overflow</td>
-    <td>
-      Stack Overflow has over 7000 Docker questions listed. We regularly
-      monitor <a href="https://stackoverflow.com/search?tab=newest&q=docker" target="_blank">Docker questions</a>
-      and so do many other knowledgeable Docker users.
-    </td>
-  </tr>
-</table>
-
-### Legal
-
-*Brought to you courtesy of our legal counsel. For more context,
-please see the [NOTICE](https://github.com/docker/docker/blob/master/NOTICE) document in this repo.*
-
-Use and transfer of Docker may be subject to certain restrictions by the
-United States and other governments.
-
-It is your responsibility to ensure that your use and/or transfer does not
-violate applicable laws.
-
-For more information, please see https://www.bis.doc.gov
-
-
-Licensing
-=========
-Docker is licensed under the Apache License, Version 2.0. See
-[LICENSE](https://github.com/docker/docker/blob/master/LICENSE) for the full
-license text.
-
-Other Docker Related Projects
-=============================
-There are a number of projects under development that are based on Docker's
-core technology. These projects expand the tooling built around the
-Docker platform to broaden its application and utility.
-
-* [Docker Registry](https://github.com/docker/distribution): Registry 
-server for Docker (hosting/delivery of repositories and images)
-* [Docker Machine](https://github.com/docker/machine): Machine management 
-for a container-centric world
-* [Docker Swarm](https://github.com/docker/swarm): A Docker-native clustering 
-system
-* [Docker Compose](https://github.com/docker/compose) (formerly Fig): 
-Define and run multi-container apps
-* [Kitematic](https://github.com/kitematic/kitematic): The easiest way to use 
-Docker on Mac and Windows
-
-If you know of another project underway that should be listed here, please help 
-us keep this list up-to-date by submitting a PR.
-
-Awesome-Docker
-==============
-You can find more projects, tools and articles related to Docker on the [awesome-docker list](https://github.com/veggiemonk/awesome-docker). Add your project there.
